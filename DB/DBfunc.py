@@ -9,12 +9,18 @@ connect = pymysql.connect(
     database=DBconf.database,
 )
 def INSERT(TABLENAME,INTO,VALUES):
+    print(f"INSERT INTO `{TABLENAME}` "
+                    f"({INTO}) "
+                    f"VALUES ({VALUES})")
     with connect.cursor() as con:
         con.execute(f"INSERT INTO `{TABLENAME}` "
                     f"({INTO}) "
                     f"VALUES ({VALUES})")
         connect.commit()
 def SELECT(INTO,TABLENAME,WHERE):
+    print(f"SELECT {INTO} "
+                    f"FROM `{TABLENAME}` "
+                     f"WHERE {WHERE}")
     with connect.cursor() as con:
         con.execute(f"SELECT {INTO} "
                     f"FROM `{TABLENAME}` "
@@ -43,6 +49,9 @@ def IFUSERINDB(TABLENAME,USERNAME):
     finally:
         return bool(RES)
 def IF(TABLENAME,INTO,WHERE):
+    print(f"SELECT {INTO} "
+          f"FROM `{TABLENAME}` "
+          f"WHERE {WHERE}")
     try:
         with connect.cursor() as con:
             RESO = con.execute(f"SELECT {INTO} "
