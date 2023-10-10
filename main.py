@@ -9,6 +9,7 @@ from Handlers import register
 from Handlers.HomeWork import HomeWorkHandlers
 from Handlers.Schedule import ScheduleHandlers
 from Handlers.Addendum import admADD,TeachADD
+from Handlers.LeaderClub import LCAplications, LCWorkOffer, LCstart
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BotSetings.token)
@@ -23,6 +24,9 @@ async def main():
         HomeWorkHandlers.router,
         ScheduleHandlers.router,
         admADD.router,
+        LCAplications.router,
+        LCstart.router,
+        LCWorkOffer.router
                        )
     await dp.start_polling(bot)
     if BotSetings.Debug:

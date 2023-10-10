@@ -1,10 +1,9 @@
-from aiogram import Router, types
-from aiogram.filters import Command
+from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
-from aiogram.types.input_media_photo import InputMediaType
-
-
 
 router = Router()
+
+@router.message(F.text == 'Домашнее задание')
+async def HomeWork(messge: Message, state: FSMContext):
+    await messge.answer('На какой день вы хотите посмотреть Домашнее Задание?')
