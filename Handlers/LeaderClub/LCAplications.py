@@ -1,18 +1,19 @@
-from aiogram import Router, types, F
+from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message,ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove
 
+from DB import DBfunc
 from Handlers.States import LeaderClubStates
 from Handlers.builders import mainKeyboard
-from DB import DBfunc
 
 router = Router()
 
 @router.message(F.text == 'Предложить идею')
 async def idea(message: Message, state: FSMContext):
-    await state.set_state(LeaderClubStates.EnterIdea)
-    await message.answer('Напиши что ты хочешь предложить. (Max 300 символов)',
-                         reply_markup=ReplyKeyboardRemove())
+    if DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
+        await state.set_state(LeaderClubStates.EnterIdea)
+        await message.answer('Напиши что ты хочешь предложить. (Max 300 символов)',
+                             reply_markup=ReplyKeyboardRemove())
 
 @router.message(LeaderClubStates.EnterIdea)
 async def EnterIdea(message: Message, state: FSMContext):

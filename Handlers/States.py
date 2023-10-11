@@ -12,3 +12,12 @@ class LeaderClubStates(StatesGroup):
     Choice = State()
     EnterApl = State()
     EnterIdea = State()
+
+
+class ERROR_States(StatesGroup):
+    EnterReport = State()
+    AddPhotos = State()
+
+class AdmStates(StatesGroup):
+    Choice = State()
+    LCAplChoice = State()

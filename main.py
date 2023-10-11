@@ -1,15 +1,18 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher
 from datetime import datetime
-import pytz
 
-from config import BotSetings
+import pytz
+from aiogram import Bot, Dispatcher
+
 from Handlers import register
+from Handlers.Addendum import admADD
 from Handlers.HomeWork import HomeWorkHandlers
+from Handlers.LeaderClub import LCstart
 from Handlers.Schedule import ScheduleHandlers
-from Handlers.Addendum import admADD,TeachADD
-from Handlers.LeaderClub import LCAplications, LCWorkOffer, LCstart
+from Handlers.ERROR_Report import ERROR_Handlers
+from Handlers.AdminPanel import AdmPanelCall
+from config import BotSetings
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=BotSetings.token)
@@ -24,9 +27,9 @@ async def main():
         HomeWorkHandlers.router,
         ScheduleHandlers.router,
         admADD.router,
-        LCAplications.router,
         LCstart.router,
-        LCWorkOffer.router
+        ERROR_Handlers.router,
+        AdmPanelCall.router
                        )
     await dp.start_polling(bot)
     if BotSetings.Debug:

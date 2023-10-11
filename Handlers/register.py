@@ -1,22 +1,19 @@
-import asyncio
-import logging
-import aiogram
-
 from aiogram import Router, types, F, Bot
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from Handlers.States import logSates
 from DB import DBfunc
+from Handlers.States import logSates
+from Handlers.builders import studTeachInline, regYesNoInline, regYesNoTInline, mainKeyboard
 from config import BotSetings
-from Handlers.builders import studTeachInline,regYesNoInline,regYesNoTInline, mainKeyboard
 
 router = Router() #Создаем объект роутер
 bot = Bot(token=BotSetings.token) #Создаем объект бот
 
 @router.message(Command('start')) #Обработчик команды старт
 async def start(message: Message, state: FSMContext):
+    await state.clear()  # Отчищаем состояние
     if DBfunc.IF('student','`TelegramID`',f'`TelegramID` = {message.from_user.id}'): #Если пользователь авторизован как ученик
         data = DBfunc.SELECT('`FSc`','student',f'`TelegramID` = {message.from_user.id}')[0][0]#Полуаем данные из БД\
         await message.answer(f'Привет {data.split()[1]}. Чем могу быть полезен?',reply_markup=mainKeyboard())
@@ -63,27 +60,30 @@ async def ceckid(message: Message, state: FSMContext):
 
 @router.callback_query(F.data.startswith("Choice_")) #Обработчик колбеков выбора
 async def Choice(call: types.CallbackQuery, state: FSMContext):
-    data = call.data.split("_")[1] #Убераем тег из call.data
+    data = call.data.split("_")[1]  # Убераем тег из call.data
     if data == 'teacher':
-        await state.set_state(logSates.EnterIdT) #Меняем состояние на logSates.EnterIdT
+        await state.set_state(logSates.EnterIdT)  # Меняем состояние на logSates.EnterIdT
     if data == 'student':
-        await state.set_state(logSates.EnterId) #Меняем состояние на logSates.EnterId
-    await bot.edit_message_text(message_id=call.message.message_id,chat_id=call.from_user.id, text='Enter key') #Редактируем сообщение с кнопками и просим пользователя ввести ключь
+        await state.set_state(logSates.EnterId)  # Меняем состояние на logSates.EnterId
+    await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.from_user.id,
+                                    text='Enter key')  #Редактируем сообщение с кнопками и просим пользователя ввести ключь
 
 @router.callback_query(F.data.startswith("Confirm_"))#Подтверждение Ученик
 async def Confirm(call: types.callback_query, state: FSMContext):
     data = call.data.split("_")[1]  # Убераем тег из call.data
     messageText = call.data.split("_")[2]  # Достаем MessageText из data
     if data == 'yes':
-        DBfunc.UPDATEWHERE('student', f'TelegramID = {call.from_user.id}',f'`id` = "{messageText}"')  # Обновляем поле TelegramID на TelegramID пользователя
+        DBfunc.UPDATEWHERE('student', f'TelegramID = {call.from_user.id}',
+                               f'`id` = "{messageText}"')  # Обновляем поле TelegramID на TelegramID пользователя
         await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.from_user.id,
-                                    text='Ваш TelegramID верифицирован. Приятного пользования!',
-                                    reply_markup=mainKeyboard())  # Редактируем сообщение с кнопками и просим пользователя ввести ключь
+                                        text='Ваш TelegramID верифицирован. Приятного пользования!',
+                                        reply_markup=mainKeyboard())  # Редактируем сообщение с кнопками и просим пользователя ввести ключь
         await state.clear()
     if data == 'no':
-        builder = studTeachInline() #Создем объект builder
+        builder = studTeachInline()  # Создем объект builder
         await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.from_user.id,
-                                    text='dev test v0.1',reply_markup=builder.as_markup())  #Редактируем сообщение с кнопками и просим пользователя ввести ключь
+                                        text='dev test v0.1',
+                                        reply_markup=builder.as_markup())  # Редактируем сообщение с кнопками и просим пользователя ввести ключь
         await state.set_state(logSates.Choice)
 
 @router.callback_query(F.data.startswith("ConfirmT_"))#Подтверждение Учитель
@@ -91,14 +91,14 @@ async def Confirm(call: types.callback_query, state: FSMContext):
     data = call.data.split("_")[1]  # Убераем тег из call.data
     messageText = call.data.split("_")[2]  # Достаем MessageText из data
     if data == 'yes':
-        DBfunc.UPDATEWHERE('teacher', f'TelegramID = {call.from_user.id}',f'`id` = "{messageText}"')  # Обновляем поле TelegramID на TelegramID пользователя
+        DBfunc.UPDATEWHERE('teacher', f'TelegramID = {call.from_user.id}',
+                               f'`id` = "{messageText}"')  # Обновляем поле TelegramID на TelegramID пользователя
         await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.from_user.id,
-                                    text='Ваш TelegramID верифицирован. Приятного пользования!',
-                                    reply_markup=mainKeyboard())  # Редактируем сообщение с кнопками и выводим сообщение об успешной регистрации
+                                        text='Ваш TelegramID верифицирован. Приятного пользования!',
+                                        reply_markup=mainKeyboard())  # Редактируем сообщение с кнопками и выводим сообщение об успешной регистрации
         await state.clear()
     if data == 'no':
         await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.from_user.id,
-                                    text='Приветсвтую. Выберите Способ авторизации\ndev test v0.1 ',
-                                    reply_markup=studTeachInline().as_markup())  #Редактируем сообщение с кнопками и просим пользователя ввести ключь
+                                        text='Приветсвтую. Выберите Способ авторизации\ndev test v0.1 ',
+                                        reply_markup=studTeachInline().as_markup())  # Редактируем сообщение с кнопками и просим пользователя ввести ключь
         await state.set_state(logSates.Choice)
-

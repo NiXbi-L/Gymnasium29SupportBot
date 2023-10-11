@@ -28,7 +28,7 @@ async def EnterFSc(message: Message,state: FSMContext):
     try:
         DBfunc.INSERT('teacher','FSc,`userkey`',f'"{message.text}","{passhashing(message.text)}"') #Добавляем пользователя в БД
         await state.clear() #отчищаем сосотяние
-        await message.answer(f'Учитель создан\nkey:```{passhashing(message.text)}```',parse_mode="MarkdownV2")
+        await message.answer(f'Учитель создан\nkey:```{passhashing(message.text)}```', parse_mode="MarkdownV2")
     except Exception as e:
         print(e)
         await message.answer('Incorrect Value') #Выводим сообшение об ощибке
