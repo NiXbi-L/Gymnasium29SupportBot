@@ -10,7 +10,7 @@ router = Router()
 
 @router.message(F.text == 'Предложить идею')
 async def idea(message: Message, state: FSMContext):
-    if DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
+    if await DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
         await state.set_state(LeaderClubStates.EnterIdea)
         await message.answer('Напиши что ты хочешь предложить. (Max 300 символов)',
                              reply_markup=ReplyKeyboardRemove())
@@ -18,9 +18,10 @@ async def idea(message: Message, state: FSMContext):
 @router.message(LeaderClubStates.EnterIdea)
 async def EnterIdea(message: Message, state: FSMContext):
     if len(list(message.text)) <= 300:
-        userid = DBfunc.SELECT('id', 'student', f'TelegramID = {message.from_user.id}')[0][0]
-        if DBfunc.COUNT('lcidea','id',f'userid = {userid}') < 1:
-            DBfunc.INSERT('lcidea','userid,text',f'{userid},"{message.text}"') #Создаем запись о заявке пользователя
+        userid = await DBfunc.SELECT('id', 'student', f'TelegramID = {message.from_user.id}')
+        userid = userid[0][0]
+        if await DBfunc.COUNT('lcidea','id',f'userid = {userid}') < 1:
+            await DBfunc.INSERT('lcidea','userid,text',f'{userid},"{message.text}"') #Создаем запись о заявке пользователя
             await message.answer('Ваша заявка отправлена!',
                                  reply_markup=mainKeyboard())
             await state.clear()

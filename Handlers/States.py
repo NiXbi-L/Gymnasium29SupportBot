@@ -21,3 +21,5 @@ class ERROR_States(StatesGroup):
 class AdmStates(StatesGroup):
     Choice = State()
     LCAplChoice = State()
+    EnterComment = State()
+    notification = State()

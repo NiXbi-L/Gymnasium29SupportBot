@@ -15,7 +15,7 @@ photos = {}
 
 @router.message(F.text == 'Сообщить об ошибке')
 async def ErrorReport(message: Message, state: FSMContext):
-    if DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
+    if await DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
         await state.set_state(ERROR_States.EnterReport)
         await message.answer('Напишите с какой проблемой столкнулись.', reply_markup=ReplyKeyboardRemove())
 
@@ -39,16 +39,17 @@ async def AddPhotos(message: Message, state: FSMContext):
 
 @router.callback_query(F.data.startswith("AddPhoto_"))
 async def EnterPhotos(call: callback_query, state: FSMContext):
-    useridTG = int(call.data.split('_')[1]) #Парсим из call.data TelegramID
-    userid = DBfunc.SELECT('id', 'student', f'TelegramID = {useridTG}')[0][0] #Запрашиваем userid из БД
+    useridTG = int(call.data.split('_')[1])  # Парсим из call.data TelegramID
+    userid = DBfunc.SELECT('id', 'student', f'TelegramID = {useridTG}')[0][0]  # Запрашиваем userid из БД
     st = ''
-    for i in photos[useridTG][1::]: #Создаем единую строку с fileid
+    for i in photos[useridTG][1::]:  # Создаем единую строку с fileid
         st += i + '|'
-    DBfunc.INSERT('error', 'userid,text,photo', f'{userid},"{photos[useridTG][0]}","{st}"') #Создаем запись в БД о новой заявке
-    photos[useridTG] = [] #Отчищаем запись в словаре о заявке
-    await state.clear() #Отчищаем состояние
+    await DBfunc.INSERT('error', 'userid,text,photo',
+                        f'{userid},"{photos[useridTG][0]}","{st}"')  # Создаем запись в БД о новой заявке
+    photos[useridTG] = []  # Отчищаем запись в словаре о заявке
+    await state.clear()  # Отчищаем состояние
     await bot.delete_message(message_id=call.message.message_id,
-                             chat_id=useridTG) #Удаляем сообщение с инлайн кнопками
+                             chat_id=useridTG)  # Удаляем сообщение с инлайн кнопками
     await bot.send_message(chat_id=useridTG,
                            text='Сообщение об ошибке отправлено!',
-                           reply_markup= mainKeyboard()) #Возвращаем главную клавиатуру
+                           reply_markup=mainKeyboard())  # Возвращаем главную к лавиатуру

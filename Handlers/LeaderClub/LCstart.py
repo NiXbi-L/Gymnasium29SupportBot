@@ -15,8 +15,8 @@ router.include_routers(
 
 @router.message(F.text == 'Лидер-Клуб')
 async def LeaderClub(message: Message, state: FSMContext):
-    if DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
-        if DBfunc.IF('student', 'id', f'LeaderClub = 1'):
+    if await DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
+        if await DBfunc.IF('student', 'id', f'LeaderClub = 1'):
             await state.set_state(LeaderClubStates.Choice)
             await message.answer('Что хочешь сделать?',
                                 reply_markup=LCKeyboardR())
@@ -28,7 +28,7 @@ async def LeaderClub(message: Message, state: FSMContext):
 
 @router.message(F.text == 'Назад')
 async def back(message: Message, state: FSMContext):
-    if DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
+    if await DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
         await state.clear()
         await message.answer('Чем могу быть полезен?',
                              reply_markup=mainKeyboard())

@@ -114,20 +114,20 @@ def admKeyboard():
         KeyboardButton(text='Заявки в ЛК'),
         KeyboardButton(text='Предложения по МП'),
         KeyboardButton(text='Сообщения об ошибках'),
-        KeyboardButton(text='Настроить Маркет'),
-        KeyboardButton(text='Настроить уведомления'),
+        KeyboardButton(text='Настройки'),
+        KeyboardButton(text='Добавить запись'),
         KeyboardButton(text='Выйти')
     )
     builder.adjust(2)
     return builder.as_markup(resize_keyboard=True)
 
-def LCAplKeyboard():
+def admAddKeyboard():
     builder = ReplyKeyboardBuilder()
 
     builder.add(
-        KeyboardButton(text='processed'),
-        KeyboardButton(text='aproved'),
-        KeyboardButton(text='rejected'),
+        KeyboardButton(text='Ученика'),
+        KeyboardButton(text='Учителя'),
+        KeyboardButton(text='Класса')
     )
     builder.adjust(2)
     return builder.as_markup(resize_keyboard=True)
@@ -158,5 +158,41 @@ def ViewOutputInline(id):
             callback_data=f'Next_{id}'
         )
     )
+    return builder.as_markup()
+
+def ViewOutputOfferInline(id):
+    builder = InlineKeyboardBuilder()
+    builder.add(
+        InlineKeyboardButton(
+            text='Отклонить',
+            callback_data=f'Reject_{id}'
+        ),
+        InlineKeyboardButton(
+            text='Одобрить',
+            callback_data=f'Aprove_{id}'
+        )
+    )
+    return builder.as_markup()
+
+def admSetingsKeyboard():
+    builder = ReplyKeyboardBuilder()
+
+    builder.add(
+        KeyboardButton(text='Уведомления'),
+    )
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+
+def admSetingsInline(butons):
+    builder = InlineKeyboardBuilder()
+    for i in butons:
+        builder.add(
+            InlineKeyboardButton(
+                text= i,
+                callback_data=f'notification_{i}'
+            )
+        )
+    builder.adjust(2)
     return builder.as_markup()
 
