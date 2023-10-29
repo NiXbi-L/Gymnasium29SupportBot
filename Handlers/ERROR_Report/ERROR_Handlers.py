@@ -5,6 +5,7 @@ from aiogram.types import Message, callback_query, ReplyKeyboardRemove
 from DB import DBfunc
 from Handlers.States import ERROR_States
 from Handlers.builders import ERRORPhotosInline, mainKeyboard
+from Handlers.ERROR_Report.Fuctions import sedERRORtoAdm
 from config import BotSetings
 
 router = Router()
@@ -40,12 +41,14 @@ async def AddPhotos(message: Message, state: FSMContext):
 @router.callback_query(F.data.startswith("AddPhoto_"))
 async def EnterPhotos(call: callback_query, state: FSMContext):
     useridTG = int(call.data.split('_')[1])  # Парсим из call.data TelegramID
-    userid = DBfunc.SELECT('id', 'student', f'TelegramID = {useridTG}')[0][0]  # Запрашиваем userid из БД
+    userid = await DBfunc.SELECT('id', 'student', f'TelegramID = {useridTG}')  # Запрашиваем userid из БД
+    userid = userid[0][0]
     st = ''
     for i in photos[useridTG][1::]:  # Создаем единую строку с fileid
         st += i + '|'
     await DBfunc.INSERT('error', 'userid,text,photo',
                         f'{userid},"{photos[useridTG][0]}","{st}"')  # Создаем запись в БД о новой заявке
+    await sedERRORtoAdm(photos[useridTG], call.from_user.id) #отсылаем сообщение всем админам
     photos[useridTG] = []  # Отчищаем запись в словаре о заявке
     await state.clear()  # Отчищаем состояние
     await bot.delete_message(message_id=call.message.message_id,

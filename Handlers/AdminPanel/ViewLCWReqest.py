@@ -4,7 +4,7 @@ from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
 
 from DB import DBfunc
-from Handlers.States import AdmStates
+from Handlers.States import AdmStates, ViewLCWRequest
 from Handlers.builders import mainKeyboard, admKeyboard, ViewOutputInline, ViewOutputOfferInline
 from config import BotSetings
 from Handlers.AdminPanel.Functions import SearchUserDataAtApl, sendNewApl
@@ -29,12 +29,13 @@ async def Choice(message: Message, state: FSMContext):
                              f'Класс: {funcReturn[1]}\n'
                              f'О себе:\n{apl[2]}',
                              reply_markup=ViewOutputOfferInline(message.from_user.id))
+        await state.set_state(ViewLCWRequest.View)
     else:
         await message.answer('По вашему запросу ничего не найдено',
                              reply_markup=admKeyboard())
         await state.set_state(AdmStates.Choice)
 
-@router.callback_query(F.data.startswith("Aprove_")) #Если заявку одобрили
+@router.callback_query(lambda query: query.data.startswith('Aprove_'), ViewLCWRequest.View) #Если заявку одобрили
 async def Aprove(call: CallbackQuery, state: FSMContext):
     data = call.data.split("_")[1::]
     apll = await DBfunc.SELECT('*', 'lcaplications', f'status = "processed"') #Запрашиваем все заявки по статусу
@@ -51,7 +52,7 @@ async def Aprove(call: CallbackQuery, state: FSMContext):
 
     await sendNewApl(apll, data, call)
 
-@router.callback_query(F.data.startswith("Reject_")) #Если заявку одобрили
+@router.callback_query(lambda query: query.data.startswith('Reject_'), ViewLCWRequest.View) #Если заявку одобрили
 async def Reject(call: CallbackQuery, state: FSMContext):
     data = call.data.split("_")[1::]
     rjApl[call.from_user.id] = await DBfunc.SELECT('*', 'lcaplications', f'status = "processed"')  # Запрашиваем все заявки по статусу

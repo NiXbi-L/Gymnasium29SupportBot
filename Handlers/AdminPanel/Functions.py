@@ -1,7 +1,8 @@
 from DB import DBfunc
 from aiogram import Bot
 from config import BotSetings
-from Handlers.builders import ViewOutputOfferInline
+from Handlers.builders import ViewOutputOfferInline, ViewOutputIdeaInline, admKeyboard
+from Handlers.States import AdmStates, ViewRequest
 bot = Bot(token=BotSetings.token)
 
 
@@ -54,4 +55,30 @@ async def genButtons(id):
         else:
             buttons.append(f'Включить {buttonName[i]}')
     return buttons
+
+async def sendNewRequest(id, state,bl=1,msg_id=0):
+    requsest = await DBfunc.SELECT('*','lcidea',f'status = "processed"')
+    if len(requsest) != 0:
+        requsest = requsest[0]
+        funcReturn = await SearchUserDataAtApl(requsest) #Получаем данные пользователя
+        if bl:
+            await bot.send_message(chat_id=id, text=f'AplicationID: {requsest[0]}\n'
+                                             f'ФИО: {funcReturn[0][2]}\n'
+                                             f'Класс: {funcReturn[1]}\n'
+                                             f'Предложение:\n{requsest[2]}', reply_markup=ViewOutputIdeaInline(requsest[0]))
+            await state.set_state(ViewRequest.View)
+        else:
+            await bot.edit_message_text(chat_id=id,message_id=msg_id, text=f'AplicationID: {requsest[0]}\n'
+                                                    f'ФИО: {funcReturn[0][2]}\n'
+                                                    f'Класс: {funcReturn[1]}\n'
+                                                    f'Предложение:\n{requsest[2]}',
+                                   reply_markup=ViewOutputIdeaInline(requsest[0]))
+    else:
+        if not(bl):
+            await bot.send_message(chat_id=id, text='По вашему запросу ничего не найдено', reply_markup=admKeyboard())
+        else:
+            await bot.send_message(chat_id=id, text='Список закончился', reply_markup=admKeyboard())
+        await state.set_state(AdmStates.Choice)
+
+
 

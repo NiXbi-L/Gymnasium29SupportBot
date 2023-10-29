@@ -61,7 +61,7 @@ def mainKeyboard():
         KeyboardButton(text='Расписание'),
         KeyboardButton(text='Лидер-Клуб'),
         KeyboardButton(text='Сообщить об ошибке'),
-        KeyboardButton(text='Маркет'),
+        #KeyboardButton(text='Маркет'),
         KeyboardButton(text='Настройки')
     )
     builder.adjust(2)
@@ -73,6 +73,7 @@ def LCKeyboard():
     builder.add(
         KeyboardButton(text='Подать заявку в Лидер-Клуб'),
         KeyboardButton(text='Предложить идею'),
+        KeyboardButton(text='Мероприятия'),
         KeyboardButton(text='Назад')
     )
     builder.adjust(2)
@@ -83,6 +84,7 @@ def LCKeyboardR():
 
     builder.add(
         KeyboardButton(text='Предложить идею'),
+        KeyboardButton(text='Мероприятия'),
         KeyboardButton(text='Назад')
     )
     builder.adjust(2)
@@ -116,6 +118,8 @@ def admKeyboard():
         KeyboardButton(text='Сообщения об ошибках'),
         KeyboardButton(text='Настройки'),
         KeyboardButton(text='Добавить запись'),
+        KeyboardButton(text='Начать чат'),
+        KeyboardButton(text='Планер'),
         KeyboardButton(text='Выйти')
     )
     builder.adjust(2)
@@ -174,6 +178,20 @@ def ViewOutputOfferInline(id):
     )
     return builder.as_markup()
 
+def ViewOutputIdeaInline(id):
+    builder = InlineKeyboardBuilder()
+    builder.add(
+        InlineKeyboardButton(
+            text='Отклонить',
+            callback_data=f'Reject_{id}'
+        ),
+        InlineKeyboardButton(
+            text='Одобрить',
+            callback_data=f'Aprove_{id}'
+        )
+    )
+    return builder.as_markup()
+
 def admSetingsKeyboard():
     builder = ReplyKeyboardBuilder()
 
@@ -195,4 +213,130 @@ def admSetingsInline(butons):
         )
     builder.adjust(2)
     return builder.as_markup()
+
+def EnterDBKeyboard():
+    builder = ReplyKeyboardBuilder()
+
+    builder.add(
+        KeyboardButton(text='Учитель'),
+        KeyboardButton(text='Ученик'),
+        KeyboardButton(text='Класс'),
+        KeyboardButton(text='Назад')
+    )
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+def ViewingFScInline(FSc):
+    builder = InlineKeyboardBuilder()
+    for i in FSc:
+        builder.add(
+            InlineKeyboardButton(
+                text=i[0],
+                callback_data=f'Teacher_{i[0]}'
+            )
+        )
+    builder.adjust(1)
+    return builder.as_markup()
+def ViewingFScStudInline(FSc):
+    builder = InlineKeyboardBuilder()
+    for i in FSc:
+        builder.add(
+            InlineKeyboardButton(
+                text=i,
+                callback_data=f'Stud_{i}'
+            )
+        )
+    builder.adjust(1)
+    return builder.as_markup()
+
+def PlanerKeyboard():
+    builder = ReplyKeyboardBuilder()
+
+    builder.add(
+        KeyboardButton(text='Мероприятие'),
+        KeyboardButton(text='Собрание'),
+    )
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+def planerYesNo():
+    builder = InlineKeyboardBuilder()
+    builder.add(
+        InlineKeyboardButton(
+            text='Изменить',
+            callback_data=f'change'
+        ),
+        InlineKeyboardButton(
+            text='Запланировать',
+            callback_data=f'Schedule'
+        )
+    )
+    builder.adjust(2)
+    return builder.as_markup()
+
+def planerChange():
+    builder = InlineKeyboardBuilder()
+    builder.add(
+        InlineKeyboardButton(
+            text='Дату',
+            callback_data=f'Date'
+        ),
+        InlineKeyboardButton(
+            text='Название',
+            callback_data=f'Name'
+        ),
+        InlineKeyboardButton(
+            text='Описание',
+            callback_data=f'Text'
+        ),
+        InlineKeyboardButton(
+            text='Отмена',
+            callback_data=f'und'
+        )
+    )
+    builder.adjust(2)
+    return builder.as_markup()
+
+def ViewEventKeyboard():
+    builder = ReplyKeyboardBuilder()
+
+    builder.add(
+        KeyboardButton(text='Ближайшие 30 дней'),
+        KeyboardButton(text='Выбрать месяц'),
+    )
+    builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True)
+
+def viewNameAndID(nameAndID,bl=1,Month=0):
+    builder = InlineKeyboardBuilder()
+    if bl:
+        for i in nameAndID:
+            builder.add(
+                InlineKeyboardButton(
+                    text=i[1],
+                    callback_data=f'Event_{i[0]}_{Month}'
+                )
+            )
+    else:
+        for i in nameAndID:
+            builder.add(
+                InlineKeyboardButton(
+                    text=i[1],
+                    callback_data=f'Event_{i[0]}_{0}'
+                )
+            )
+    builder.adjust(1)
+    return builder.as_markup()
+
+def viewNameAndIDund(Month):
+    builder = InlineKeyboardBuilder()
+    builder.add(
+        InlineKeyboardButton(
+            text='Назад',
+            callback_data=f'und_{Month}'
+        )
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
 

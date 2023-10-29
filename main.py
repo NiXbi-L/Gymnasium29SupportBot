@@ -12,6 +12,8 @@ from Handlers.LeaderClub import LCstart
 from Handlers.Schedule import ScheduleHandlers
 from Handlers.ERROR_Report import ERROR_Handlers
 from Handlers.AdminPanel import AdmPanelCall
+from Handlers.Chat import messager
+from Handlers.Planer import StartPlaner
 from config import BotSetings
 
 logging.basicConfig(level=logging.INFO)
@@ -29,8 +31,12 @@ async def main():
         admADD.router,
         LCstart.router,
         ERROR_Handlers.router,
-        AdmPanelCall.router
+        messager.router,
+        AdmPanelCall.router,
+        StartPlaner.router
                        )
+    # Запускаем Clocker() в асинхронном режиме
+    asyncio.create_task(Clocker())
     await dp.start_polling(bot)
     if BotSetings.Debug:
         time = datetime.now(pytz.timezone('Asia/Vladivostok')).strftime('%d.%m в %H:%M')
@@ -41,6 +47,10 @@ async def start():
         time = datetime.now(pytz.timezone('Asia/Vladivostok')).strftime('%d.%m в %H:%M')
         await bot.send_message(BotSetings.admin, f'Бот запущен  {time}')
 
+async def Clocker():
+    while True:
+
+        await asyncio.sleep(1)
 
 if __name__ == "__main__":
     asyncio.run(main())

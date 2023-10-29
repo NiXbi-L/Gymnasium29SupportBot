@@ -20,7 +20,7 @@ async def EnterIdea(message: Message, state: FSMContext):
     if len(list(message.text)) <= 300:
         userid = await DBfunc.SELECT('id', 'student', f'TelegramID = {message.from_user.id}')
         userid = userid[0][0]
-        if await DBfunc.COUNT('lcidea','id',f'userid = {userid}') < 1:
+        if await DBfunc.COUNT('lcidea','id',f'userid = {userid} AND status = "processed"') < 1:
             await DBfunc.INSERT('lcidea','userid,text',f'{userid},"{message.text}"') #Создаем запись о заявке пользователя
             await message.answer('Ваша заявка отправлена!',
                                  reply_markup=mainKeyboard())

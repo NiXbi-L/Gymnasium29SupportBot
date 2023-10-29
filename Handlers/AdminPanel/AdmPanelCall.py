@@ -6,12 +6,13 @@ from aiogram.filters import Command
 from DB import DBfunc
 from Handlers.States import AdmStates
 from Handlers.builders import mainKeyboard, admKeyboard, ViewOutputInline
-from Handlers.AdminPanel import ChangeMarcket, Functions, ViewErrorReports, ViewLCRequest, ViewLCWReqest, Setings
+from Handlers.AdminPanel import Functions, ViewErrorReports, ViewLCRequest, ViewLCWReqest, Setings
 
 
 router = Router()
 router.include_routers(
     ViewLCWReqest.router,
+    ViewLCRequest.router,
     Setings.router
 )
 

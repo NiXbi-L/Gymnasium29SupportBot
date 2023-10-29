@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from DB import DBfunc
-from Handlers.States import LeaderClubStates
+from Handlers.States import LeaderClubStates, AdmStates
 from Handlers.builders import LCKeyboard, mainKeyboard, LCKeyboardR
 from Handlers.LeaderClub import LCAplications,LCWorkOffer
 
@@ -13,7 +13,7 @@ router.include_routers(
     LCWorkOffer.router
 )
 
-@router.message(F.text == 'Лидер-Клуб')
+@router.message(lambda message: message.text == 'Лидер-Клуб')
 async def LeaderClub(message: Message, state: FSMContext):
     if await DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
         if await DBfunc.IF('student', 'id', f'LeaderClub = 1'):
@@ -26,7 +26,7 @@ async def LeaderClub(message: Message, state: FSMContext):
             await message.answer('Что хочешь сделать?',
                                 reply_markup=LCKeyboard())
 
-@router.message(F.text == 'Назад')
+@router.message(lambda message: message.text == 'Назад', LeaderClubStates.Choice)
 async def back(message: Message, state: FSMContext):
     if await DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
         await state.clear()
