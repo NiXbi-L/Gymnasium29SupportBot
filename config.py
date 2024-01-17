@@ -1,6 +1,6 @@
 class BotSetings:
-    token = '6395863933:AAF-XuIINoE0OxiU9-72kodGM8ZpZgRM5Jo'
-    admin = 1660528172
+    token = '<BotToken>'
+    admin = #AdminTGID
     Debug = True
 
 class DBconf:
