@@ -31,7 +31,7 @@ async def addTeach(message: Message, state: FSMContext):
 async def EnterFSc(message: Message,state: FSMContext):
     try:
         key = await generate_unique_key()
-        await DBfunc.INSERT('teacher', 'FSc,`userkey`',
+        await DBfunc.INSERT('teacher','FSc,`userkey`',
                             f'"{message.text}","{key}"')  # Добавляем пользователя в БД
         await state.clear() #отчищаем сосотяние
         await message.answer(f'Учитель создан\nkey:```{key}```', parse_mode="MarkdownV2", reply_markup= admKeyboard())

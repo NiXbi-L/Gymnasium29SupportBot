@@ -9,3 +9,8 @@ class DBconf:
     user = 'mysql'
     password = 'mysql'
     database = 'learningsupport'
+
+class KDA:
+    LC = 72
+    LCW = 7
+    ERROr = 24

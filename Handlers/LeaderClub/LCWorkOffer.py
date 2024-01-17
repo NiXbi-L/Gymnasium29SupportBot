@@ -1,11 +1,15 @@
+from datetime import datetime
+
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from DB import DBfunc
+from Handlers.AdminPanel.Functions import admnotification
+from Handlers.LeaderClub.Fuctions import day
 from Handlers.States import LeaderClubStates
 from Handlers.builders import mainKeyboard
-from Handlers.AdminPanel.Functions import admnotification
+from config import KDA
 
 router = Router()
 @router.message(F.text == 'Подать заявку в Лидер-Клуб')
@@ -14,9 +18,17 @@ async def LeaderClubApl(message: Message, state: FSMContext):
         userid = await DBfunc.SELECT('id', 'student', f'TelegramID = {message.from_user.id}')  # получаем userID по TelegramID
         userid = userid[0][0]
         if await DBfunc.COUNT('lcaplications', 'id', f'userid = {userid} AND `status` = "processed"') < 1:  # Если кол-во заявок меньше 1
-            await message.answer('Расскажите немного о себе. (Max 300 символов)',
-                                 reply_markup=ReplyKeyboardRemove())
-            await state.set_state(LeaderClubStates.EnterApl)  #Переключаем состояние в LeaderClubStates.EnterApl
+            if not (await DBfunc.IF('lcaplications', '*',
+                                    f'userid = {userid} AND date >= DATE_SUB(CURDATE(), INTERVAL {KDA.LCW} DAY) AND status = "rejected"')):
+                await message.answer('Расскажите немного о себе. (Max 300 символов)',
+                                     reply_markup=ReplyKeyboardRemove())
+                await state.set_state(LeaderClubStates.EnterApl)  # Переключаем состояние в LeaderClubStates.EnterApl
+            else:
+                date = await DBfunc.SELECT('date', 'lcaplications',
+                                           f'userid = {userid} AND date >= DATE_SUB(CURDATE(), INTERVAL {KDA.LCW} DAY) AND status = "rejected"')
+                date = date[0][0]
+                await message.answer(
+                    f'Вы сможете подать повторную заявку через {await day(KDA.LCW - (datetime.now() - date).days)}')
         else:
             await message.answer('У вас уже есть активная заявка!',
                                  reply_markup=mainKeyboard())

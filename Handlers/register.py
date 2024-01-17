@@ -15,7 +15,7 @@ bot = Bot(token=BotSetings.token) #Создаем объект бот
 async def start(message: Message, state: FSMContext):
     await state.clear()  # Отчищаем состояние
     if await DBfunc.IF('student','`TelegramID`',f'`TelegramID` = {message.from_user.id}'): #Если пользователь авторизован как ученик
-        data = await DBfunc.SELECT('`FSc`','student',f'`TelegramID` = {message.from_user.id}')#Полуаем данные из БД\
+        data = await DBfunc.SELECT('`FSc`','student',f'`TelegramID` = {message.from_user.id}')#Полуаем данные из БД
         data = data[0][0]
         await message.answer(f'Привет {data.split()[1]}. Чем могу быть полезен?',reply_markup=mainKeyboard())
 
@@ -79,7 +79,8 @@ async def Confirm(call: types.callback_query, state: FSMContext):
     if data == 'yes':
         await DBfunc.UPDATEWHERE('student', f'TelegramID = {call.from_user.id}',
                                f'`id` = {messageText}')  # Обновляем поле TelegramID на TelegramID пользователя
-        await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.from_user.id,
+        await bot.delete_message(message_id=call.message.message_id, chat_id=call.from_user.id)
+        await bot.send_message(chat_id=call.from_user.id,
                                         text='Ваш TelegramID верифицирован. Приятного пользования!',
                                         reply_markup=mainKeyboard())  # Редактируем сообщение с кнопками и просим пользователя ввести ключь
         await state.clear()
@@ -97,7 +98,8 @@ async def Confirm(call: types.callback_query, state: FSMContext):
     if data == 'yes':
         await DBfunc.UPDATEWHERE('teacher', f'TelegramID = {call.from_user.id}',
                                f'`id` = "{messageText}"')  # Обновляем поле TelegramID на TelegramID пользователя
-        await bot.edit_message_text(message_id=call.message.message_id, chat_id=call.from_user.id,
+        await bot.delete_message(message_id=call.message.message_id, chat_id=call.from_user.id)
+        await bot.send_message(chat_id=call.from_user.id,
                                         text='Ваш TelegramID верифицирован. Приятного пользования!',
                                         reply_markup=mainKeyboard())  # Редактируем сообщение с кнопками и выводим сообщение об успешной регистрации
         await state.clear()

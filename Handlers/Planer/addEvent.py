@@ -103,7 +103,7 @@ async def change(call: CallbackQuery, state: FSMContext):
 async def change(call: CallbackQuery, state: FSMContext):
     await bot.edit_message_text(chat_id=call.from_user.id,
                                 message_id=call.message.message_id,
-                                text='Что хотите изменить?')
+                                text='Введите новое название')
     await state.set_state(Planer.ChangeEvName)
 
 
@@ -111,7 +111,7 @@ async def change(call: CallbackQuery, state: FSMContext):
 async def change(call: CallbackQuery, state: FSMContext):
     await bot.edit_message_text(chat_id=call.from_user.id,
                                 message_id=call.message.message_id,
-                                text='Что хотите изменить?')
+                                text='Введите новое описание')
     await state.set_state(Planer.ChangeNoteText)
 
 
