@@ -1,10 +1,12 @@
-from aiogram import Router, types
-from aiogram.filters import Command
+from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
-from aiogram.types.input_media_photo import InputMediaType
 
-
+from DB import DBfunc
 
 router = Router()
+
+@router.message(F.text == 'Домашнее задание')
+async def HomeWork(message: Message, state: FSMContext):
+    if await DBfunc.IF('student', '`TelegramID`', f'`TelegramID` = {message.from_user.id}'):
+        await message.answer('NetShcoolAPI Временно не доступен.')
